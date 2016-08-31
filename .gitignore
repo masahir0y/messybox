@@ -1,0 +1,28 @@
+#
+# Normal rules
+#
+.*
+*.o
+*.patch
+
+#
+# Top-level generic files
+#
+/messybox
+
+#
+# git files that we don't want to ignore even it they are dot-files
+#
+!.gitignore
+
+# cscope files
+cscope.*
+ncscope.*
+
+# gnu global files
+GPATH
+GRTAGS
+GSYMS
+GTAGS
+
+*~

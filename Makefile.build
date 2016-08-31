@@ -1,0 +1,56 @@
+c_flags        = -Wp,-MD,$(depfile),-MP $(INCLUDE)     \
+		 $(KBUILD_CFLAGS) $(CFLAGS_$(basetarget).o)
+
+quiet_cmd_cc_o_c = CC      $@
+      cmd_cc_o_c = $(CC) $(c_flags) -c -o $@ $<
+
+%.o: %.c FORCE
+	$(call if_changed_dep,cc_o_c)
+
+RCS_FIND_IGNORE := \( -name SCCS -o -name BitKeeper -o -name .svn -o    \
+		  -name CVS -o -name .pc -o -name .hg -o -name .git \) \
+		  -prune -o
+
+__clean-files   := $(wildcard $(clean-files))
+
+quiet_cmd_clean = CLEAN   $(__clean-files)
+      cmd_clean = rm -f $(__clean-files)
+
+PHONY += clean
+clean:
+ifneq ($(strip $(__clean-files)),)
+	$(call cmd,clean)
+endif
+	@find . $(RCS_FIND_IGNORE) \
+		\( -name '*.[oas]' -o -name '.*.cmd' -o -name '.*.d' \) \
+		-type f -print | xargs rm -f
+
+PHONY += distclean
+
+distclean: clean
+	@find . $(RCS_FIND_IGNORE) \
+		\( -name '*.orig' -o -name '*.rej' -o -name '*~' \
+		-o -name '*.bak' -o -name '#*#' -o -name '.*.orig' \
+		-o -name '.*.rej' -o -name '*%'  -o -name 'core' \) \
+		-type f -print | xargs rm -f
+
+# Add FORCE to the prequisites of a target to force it to be always rebuilt.
+# ---------------------------------------------------------------------------
+
+PHONY += FORCE
+
+FORCE:
+
+cmd_files := $(wildcard .*.cmd)
+
+ifneq ($(cmd_files),)
+  include $(cmd_files)
+endif
+
+PHONY += FORCE
+FORCE:
+
+# Declare the contents of the PHONY variable as phony.  We keep that
+# information in a variable so we can use it in if_changed and friends.
+
+.PHONY: $(PHONY)
